@@ -1,60 +1,54 @@
- Multi-Agent AI Task Executor
+Multi-Agent AI Task Executor (LLM-Driven Planner with Real API Execution)
 
-A lightweight agent-based AI system that interprets natural language tasks, plans required actions using an LLM, executes real external APIs, and verifies results — all runnable locally on localhost.
+A lightweight multi-agent AI system that converts natural language tasks into structured execution plans using an LLM, executes real third-party APIs, and verifies results — fully runnable locally on localhost.
 
-This project demonstrates agent design, controlled LLM usage, real API integration, and a working demo, as required by the assignment.
+This project demonstrates agent-based design, controlled LLM usage, real API integration, and a complete end-to-end workflow, as required by the assignment.
 
 📌 Overview
 
-The system uses three agents:
+The system is composed of three independent agents, each with a clear responsibility:
 
 Planner Agent (LLM-based)
-Decides what actions/tools are required to fulfill a user’s task.
+Interprets the user’s natural language task and produces a structured JSON execution plan.
 
 Executor Agent (Tool-based)
-Executes real external APIs (Weather, GitHub).
+Executes real external APIs (Weather, GitHub) according to the plan.
 
 Verifier Agent (Rule-based)
-Verifies whether execution succeeded without using an LLM.
+Verifies whether tool execution succeeded without using an LLM, ensuring deterministic validation.
 
-The system avoids monolithic prompts and uses the LLM only for planning, not for data retrieval.
+The LLM is used only for planning, not for data retrieval.
 
-🏗️ Architecture
+🧠 Architecture Flow
+
 User Request
-     │
-     ▼
-Planner Agent (LLM)
-(decides steps)
-     │
-     ▼
-Executor Agent
-(calls APIs)
-     │
-     ▼
-Verifier Agent
-(validates results)
-     │
-     ▼
-Final JSON Response
+→ Planner Agent (LLM generates execution plan)
+→ Executor Agent (calls real APIs)
+→ Verifier Agent (validates results)
+→ Final JSON Response
 
-Key Design Decisions
+🔑 Key Design Decisions
 
 LLM is used only for reasoning and planning
 
-External APIs are used for real data
+External APIs are used for real, up-to-date data
 
 Verification is deterministic (no hallucinations)
 
 Designed to be token-efficient and robust
 
-🧠 Agents Description
-1️⃣ Planner Agent
+Agents are modular and independently testable
+
+🤖 Agents Description
+Planner Agent
 
 Uses an LLM (Groq – llama-3.1-8b-instant)
 
-Converts natural language tasks into a structured execution plan
+Converts natural language tasks into a strict JSON plan
 
-Output format (JSON):
+No explanations or free-text output
+
+Example Planner Output
 
 {
   "steps": [
@@ -63,35 +57,31 @@ Output format (JSON):
   ]
 }
 
-2️⃣ Executor Agent
+Executor Agent
 
-Executes the plan step-by-step
+Executes tools defined in the plan
 
-Calls real APIs
+Calls real external APIs
 
-Supported tools:
+Handles failures gracefully per tool
 
-WeatherTool
+Verifier Agent
 
-GitHubTool
+Rule-based (no LLM usage)
 
-3️⃣ Verifier Agent
+Confirms whether each tool executed successfully
 
-Rule-based (no LLM)
-
-Checks if API calls succeeded
-
-Returns status: success, partial, or failed
+Produces a final verification status
 
 🌐 Integrated APIs
 
-This project integrates two real external APIs, as required:
+This project integrates two real third-party APIs, as required:
 
 OpenWeatherMap API
 
 Fetches real-time weather data
 
-Example output: temperature, description
+Example outputs: temperature, description, wind speed
 
 GitHub Search API
 
@@ -99,47 +89,62 @@ Searches public repositories
 
 Returns top repositories sorted by stars
 
-🚀 How to Run Locally
-1️⃣ Clone the repository
-git clone <your-repo-url>
-cd ai_agents
+🚀 Running the Project Locally
+1. Clone the repository
+git clone https://github.com/Vidhichandrayan/AI_Agents.git
+cd AI_Agents
 
-2️⃣ Create virtual environment
+2. Create and activate a virtual environment
 python -m venv venv
-source venv/bin/activate   # Linux/Mac
-venv\Scripts\activate      # Windows
 
-3️⃣ Install dependencies
+
+Windows
+
+venv\Scripts\activate
+
+
+Linux / macOS
+
+source venv/bin/activate
+
+3. Install dependencies
 pip install -r requirements.txt
 
-4️⃣ Set environment variables
+4. Set environment variables
 
-Create a .env file:
+Create a .env file in the project root:
 
 GROQ_API_KEY=your_groq_api_key
 WEATHER_API_KEY=your_openweather_api_key
+GITHUB_TOKEN=optional_github_token
 
 
-A .env.example file is provided for reference.
+A .env.example file can be used as reference.
 
-5️⃣ Run the server
-python -m uvicorn main:app --reload
-uvicorn main:app
+5. Run the server
+uvicorn main:app --reload
+
+
 
 Server will start at:
+
 http://127.0.0.1:8000
 
-🧪 Example Requests
-Example 1
-{
-  "task": "Get weather in Mumbai and list top AI GitHub repositories"
-}
-Example 2
-{ "task": "Get weather in London" }
-Example 3
-{ "task": "Find top AI repositories on GitHub" }
-Example 4
-{ "task": "What's the weather in Berlin and list Python repositories on GitHub" }
-Example 5
-{ "task": "Get weather in Tokyo" }
 
+API documentation:
+
+http://127.0.0.1:8000/docs
+
+🧪 Example Prompts to Test
+
+1. You can test the system using the /run endpoint with the following example tasks:
+
+2. Get weather in Mumbai and list top AI GitHub repositories
+
+3. What's the weather in Tokyo?
+
+4.  Find top Python machine learning repositories on GitHub
+
+5. Get weather in Berlin and list Python repositories
+
+6. What's the weather in New York and find data science repositories
