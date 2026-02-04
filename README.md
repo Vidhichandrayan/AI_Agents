@@ -138,8 +138,6 @@ This project demonstrates a complete agent-based AI system that showcases:
    GITHUB_TOKEN=your_github_token_here  # Optional
    ```
    
-   > 💡 **Tip**: Use `.env.example` as a template
-
 5. **Start the server**
    ```bash
    uvicorn main:app --reload
