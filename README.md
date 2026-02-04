@@ -156,62 +156,6 @@ This project demonstrates a complete agent-based AI system that showcases:
 
 Execute a natural language task using the multi-agent system.
 
-**Request Body:**
-```json
-{
-  "task": "Get weather in Mumbai and list top AI GitHub repositories"
-}
-```
-
-**Response:**
-```json
-{
-  "plan": {
-    "steps": [
-      {
-        "tool": "WeatherTool",
-        "input": "Mumbai"
-      },
-      {
-        "tool": "GitHubTool",
-        "input": "AI"
-      }
-    ]
-  },
-  "execution_results": [
-    {
-      "tool": "WeatherTool",
-      "result": {
-        "city": "Mumbai",
-        "temperature": 28.5,
-        "description": "Clear sky",
-        "humidity": 65,
-        "wind_speed": 3.2
-      }
-    },
-    {
-      "tool": "GitHubTool",
-      "result": {
-        "query": "AI",
-        "repositories": [
-          {
-            "name": "tensorflow",
-            "owner": "tensorflow",
-            "stars": 185000,
-            "description": "An Open Source Machine Learning Framework",
-            "url": "https://github.com/tensorflow/tensorflow"
-          }
-        ]
-      }
-    }
-  ],
-  "verification": {
-    "status": "success",
-    "verified_steps": 2,
-    "total_steps": 2
-  }
-}
-```
 
 ## 🤖 Agent Details
 
@@ -291,6 +235,12 @@ response = requests.post(
 )
 
 print(response.json())
+
+```
+### FastAPI Run Command
+```
+uvicorn main:app --reload
+uvicorn main:app
 ```
 
 ## 📁 Project Structure
