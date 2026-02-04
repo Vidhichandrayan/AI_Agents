@@ -1,150 +1,335 @@
-Multi-Agent AI Task Executor (LLM-Driven Planner with Real API Execution)
+# 🤖 Multi-Agent AI Task Executor
 
-A lightweight multi-agent AI system that converts natural language tasks into structured execution plans using an LLM, executes real third-party APIs, and verifies results — fully runnable locally on localhost.
+A lightweight, production-ready multi-agent AI system that converts natural language tasks into structured execution plans using an LLM, executes real third-party APIs, and verifies results—fully runnable locally.
 
-This project demonstrates agent-based design, controlled LLM usage, real API integration, and a complete end-to-end workflow, as required by the assignment.
+[![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.100+-green.svg)](https://fastapi.tiangolo.com/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-📌 Overview
+## 📋 Table of Contents
 
-The system is composed of three independent agents, each with a clear responsibility:
+- [Overview](#-overview)
+- [Features](#-features)
+- [Architecture](#-architecture)
+- [Quick Start](#-quick-start)
+- [API Documentation](#-api-documentation)
+- [Agent Details](#-agent-details)
+- [Example Use Cases](#-example-use-cases)
+- [Project Structure](#-project-structure)
+- [Troubleshooting](#-troubleshooting)
+- [Contributing](#-contributing)
 
-Planner Agent (LLM-based)
-Interprets the user’s natural language task and produces a structured JSON execution plan.
+## 🎯 Overview
 
-Executor Agent (Tool-based)
-Executes real external APIs (Weather, GitHub) according to the plan.
+This project demonstrates a complete agent-based AI system that showcases:
 
-Verifier Agent (Rule-based)
-Verifies whether tool execution succeeded without using an LLM, ensuring deterministic validation.
+- **Agent-based design** with clear separation of concerns
+- **Controlled LLM usage** for planning only (no hallucinations in data retrieval)
+- **Real API integration** with external services
+- **Deterministic verification** without LLM overhead
+- **End-to-end workflow** from natural language to verified results
 
-The LLM is used only for planning, not for data retrieval.
+### What Makes This Different?
 
-🧠 Architecture Flow
+- ✅ LLM is used **only** for reasoning and planning
+- ✅ External APIs provide **real, up-to-date data**
+- ✅ Verification is **deterministic** (no hallucinations)
+- ✅ Token-efficient and cost-optimized
+- ✅ Modular agents that are independently testable
 
-User Request
-→ Planner Agent (LLM generates execution plan)
-→ Executor Agent (calls real APIs)
-→ Verifier Agent (validates results)
-→ Final JSON Response
+## ✨ Features
 
-🔑 Key Design Decisions
+- 🧠 **Intelligent Planning**: Natural language understanding via LLM
+- 🔧 **Real API Execution**: Integration with OpenWeatherMap and GitHub APIs
+- ✓ **Automated Verification**: Rule-based validation of execution results
+- 🚀 **REST API Interface**: FastAPI-powered endpoints with auto-generated docs
+- 🔒 **Secure Configuration**: Environment-based API key management
+- 📊 **Structured Outputs**: Clean JSON responses for easy integration
 
-LLM is used only for reasoning and planning
+## 🏗️ Architecture
 
-External APIs are used for real, up-to-date data
+```
+┌─────────────────┐
+│  User Request   │
+│ (Natural Lang.) │
+└────────┬────────┘
+         │
+         ▼
+┌─────────────────────────────────┐
+│     Planner Agent (LLM)         │
+│  - Interprets user intent       │
+│  - Generates execution plan     │
+│  - Output: Structured JSON      │
+└────────┬────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────┐
+│   Executor Agent (Tool-based)   │
+│  - Calls WeatherTool API        │
+│  - Calls GitHubTool API         │
+│  - Handles errors gracefully    │
+└────────┬────────────────────────┘
+         │
+         ▼
+┌─────────────────────────────────┐
+│  Verifier Agent (Rule-based)    │
+│  - Validates execution results  │
+│  - No LLM usage (deterministic) │
+│  - Returns success/failure      │
+└────────┬────────────────────────┘
+         │
+         ▼
+┌─────────────────┐
+│  JSON Response  │
+└─────────────────┘
+```
 
-Verification is deterministic (no hallucinations)
+### Agent Responsibilities
 
-Designed to be token-efficient and robust
+| Agent | Type | Responsibility | Technology |
+|-------|------|----------------|------------|
+| **Planner** | LLM-based | Convert natural language to structured execution plan | Groq (llama-3.1-8b-instant) |
+| **Executor** | Tool-based | Execute real external APIs per plan | Python, REST APIs |
+| **Verifier** | Rule-based | Validate execution success deterministically | Python logic |
 
-Agents are modular and independently testable
+## 🚀 Quick Start
 
-🤖 Agents Description
-Planner Agent
+### Prerequisites
 
-Uses an LLM (Groq – llama-3.1-8b-instant)
+- Python 3.8 or higher
+- API keys for:
+  - [Groq](https://console.groq.com/) (for LLM)
+  - [OpenWeatherMap](https://openweathermap.org/api) (for weather data)
+  - [GitHub](https://github.com/settings/tokens) (optional, for higher rate limits)
 
-Converts natural language tasks into a strict JSON plan
+### Installation
 
-No explanations or free-text output
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Vidhichandrayan/AI_Agents.git
+   cd AI_Agents
+   ```
 
-Example Planner Output
+2. **Create a virtual environment**
+   
+   **Windows:**
+   ```bash
+   python -m venv venv
+   venv\Scripts\activate
+   ```
+   
+   **Linux/macOS:**
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
+   ```
 
+3. **Install dependencies**
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+4. **Configure environment variables**
+   
+   Create a `.env` file in the project root:
+   ```env
+   GROQ_API_KEY=your_groq_api_key_here
+   WEATHER_API_KEY=your_openweather_api_key_here
+   GITHUB_TOKEN=your_github_token_here  # Optional
+   ```
+   
+   > 💡 **Tip**: Use `.env.example` as a template
+
+5. **Start the server**
+   ```bash
+   uvicorn main:app --reload
+   ```
+
+6. **Access the application**
+   - **API Server**: http://127.0.0.1:8000
+   - **Interactive Docs**: http://127.0.0.1:8000/docs
+   - **Alternative Docs**: http://127.0.0.1:8000/redoc
+
+## 📚 API Documentation
+
+### POST `/run`
+
+Execute a natural language task using the multi-agent system.
+
+**Request Body:**
+```json
 {
-  "steps": [
-    { "tool": "WeatherTool", "input": "Mumbai" },
-    { "tool": "GitHubTool", "input": "AI" }
-  ]
+  "task": "Get weather in Mumbai and list top AI GitHub repositories"
 }
+```
 
-Executor Agent
+**Response:**
+```json
+{
+  "plan": {
+    "steps": [
+      {
+        "tool": "WeatherTool",
+        "input": "Mumbai"
+      },
+      {
+        "tool": "GitHubTool",
+        "input": "AI"
+      }
+    ]
+  },
+  "execution_results": [
+    {
+      "tool": "WeatherTool",
+      "result": {
+        "city": "Mumbai",
+        "temperature": 28.5,
+        "description": "Clear sky",
+        "humidity": 65,
+        "wind_speed": 3.2
+      }
+    },
+    {
+      "tool": "GitHubTool",
+      "result": {
+        "query": "AI",
+        "repositories": [
+          {
+            "name": "tensorflow",
+            "owner": "tensorflow",
+            "stars": 185000,
+            "description": "An Open Source Machine Learning Framework",
+            "url": "https://github.com/tensorflow/tensorflow"
+          }
+        ]
+      }
+    }
+  ],
+  "verification": {
+    "status": "success",
+    "verified_steps": 2,
+    "total_steps": 2
+  }
+}
+```
 
-Executes tools defined in the plan
+## 🤖 Agent Details
 
-Calls real external APIs
+### 1. Planner Agent (LLM-based)
 
-Handles failures gracefully per tool
+**Purpose**: Converts natural language into structured execution plans
 
-Verifier Agent
-
-Rule-based (no LLM usage)
-
-Confirms whether each tool executed successfully
-
-Produces a final verification status
-
-🌐 Integrated APIs
-
-This project integrates two real third-party APIs, as required:
-
-OpenWeatherMap API
-
-Fetches real-time weather data
-
-Example outputs: temperature, description, wind speed
-
-GitHub Search API
-
-Searches public repositories
-
-Returns top repositories sorted by stars
-
-🚀 Running the Project Locally
-1. Clone the repository
-git clone https://github.com/Vidhichandrayan/AI_Agents.git
-cd AI_Agents
-
-2. Create and activate a virtual environment
-python -m venv venv
-
-
-Windows
-
-venv\Scripts\activate
-
-
-Linux / macOS
-
-source venv/bin/activate
-
-3. Install dependencies
-pip install -r requirements.txt
-
-4. Set environment variables
-
-Create a .env file in the project root:
-
-GROQ_API_KEY=your_groq_api_key
-WEATHER_API_KEY=your_openweather_api_key
-GITHUB_TOKEN=optional_github_token
-
-
-A .env.example file can be used as reference.
-
-5. Run the server
-uvicorn main:app --reload
+**Key Features**:
+- Uses Groq's llama-3.1-8b-instant model
+- Produces strict JSON output (no free-text explanations)
+- Token-optimized prompting
 
 
+### 2. Executor Agent (Tool-based)
 
-Server will start at:
+**Purpose**: Executes real external APIs based on the plan
 
-http://127.0.0.1:8000
+**Integrated Tools**:
+
+#### WeatherTool
+- **API**: OpenWeatherMap
+- **Functionality**: Real-time weather data
+- **Output**: Temperature, description, humidity, wind speed
+
+#### GitHubTool
+- **API**: GitHub Search API
+- **Functionality**: Search public repositories
+- **Output**: Top repositories sorted by stars
+
+**Error Handling**:
+- Graceful degradation per tool
+- Detailed error messages
+- Continues execution even if one tool fails
+
+### 3. Verifier Agent (Rule-based)
+
+**Purpose**: Validates execution results without using an LLM
+
+**Validation Rules**:
+- Checks for required fields in responses
+- Validates data types and formats
+- Confirms API call success
+- Returns deterministic pass/fail status
 
 
-API documentation:
+## 💡 Example Use Cases
 
-http://127.0.0.1:8000/docs
+Test the system with these natural language prompts:
 
-🧪 Example Prompts to Test
 
-1. You can test the system using the /run endpoint with the following example tasks:
+### GitHub Searches + Weather Queries
+```
+"Find top Python machine learning repositories"
+"Show me popular AI projects on GitHub"
+"List trending data science repositories"
+"Get weather in Mumbai and list top AI GitHub repositories"
+"What's the weather in London and find Python web frameworks"
+"Show weather for Paris and search for React repositories"
+```
 
-2. Get weather in Mumbai and list top AI GitHub repositories
+### Testing via cURL
 
-3. What's the weather in Tokyo?
+```bash
+curl -X POST "http://127.0.0.1:8000/run" \
+  -H "Content-Type: application/json" \
+  -d '{"task": "Get weather in Mumbai and find AI repositories"}'
+```
 
-4.  Find top Python machine learning repositories on GitHub
+### Testing via Python
 
-5. Get weather in Berlin and list Python repositories
+```python
+import requests
 
-6. What's the weather in New York and find data science repositories
+response = requests.post(
+    "http://127.0.0.1:8000/run",
+    json={"task": "What's the weather in Tokyo?"}
+)
+
+print(response.json())
+```
+
+## 📁 Project Structure
+
+```
+AI_Agents/
+├── main.py                 # FastAPI application entry point
+├── agents/
+│   ├── planner.py         # Planner Agent (LLM-based)
+│   ├── executor.py        # Executor Agent (Tool-based)
+│   └── verifier.py        # Verifier Agent (Rule-based)
+├── tools/
+│   ├── weather_tool.py    # OpenWeatherMap integration
+│   └── github_tool.py     # GitHub API integration
+├── requirements.txt       # Python dependencies
+├── .env.example          # Environment variables template
+├── .env                  # Your API keys (not in git)
+├── .gitignore           # Git ignore rules
+└── README.md            # This file
+```
+
+### Rate Limits
+
+- **OpenWeatherMap**: 60 calls/minute (free tier)
+- **GitHub**: 10 requests/minute (unauthenticated), 30 requests/minute (with token)
+- **Groq**: Check your account limits
+
+
+## 🙏 Acknowledgments
+
+- [Groq](https://groq.com/) for fast LLM inference
+- [OpenWeatherMap](https://openweathermap.org/) for weather data API
+- [GitHub](https://github.com/) for repository search API
+- [FastAPI](https://fastapi.tiangolo.com/) for the excellent web framework
+
+## 📧 Contact
+
+**Vidhi Chandrayan** - [GitHub](https://github.com/Vidhichandrayan)
+
+Project Link: [https://github.com/Vidhichandrayan/AI_Agents](https://github.com/Vidhichandrayan/AI_Agents)
+
+---
